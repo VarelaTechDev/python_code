@@ -36,3 +36,43 @@ def lookup_link(input_filename):
 # Lookup the link for a value in "links.txt"
 lookup_link("links.txt")
 ```
+
+```python
+import os
+
+def extract_javadoc(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    # Identify the JavaDoc comment blocks
+    inside_javadoc = False
+    javadoc_lines = []
+    for line in lines:
+        if line.strip().startswith('/**') and not line.strip().startswith('/********'):
+            inside_javadoc = True
+            continue  # skip the line that starts the JavaDoc comment
+        if line.strip().endswith('*/') and inside_javadoc:
+            inside_javadoc = False
+            continue  # skip the line that ends the JavaDoc comment
+        if inside_javadoc:
+            javadoc_lines.append(line.strip())
+
+    return ' '.join(javadoc_lines)
+
+def search_and_extract(name, directory):
+    target_file = os.path.join(directory, name + "Handler.java")
+    
+    if os.path.exists(target_file):
+        javadoc = extract_javadoc(target_file)
+        
+        # Write to output file
+        with open('javadoc_output.txt', 'w') as out_file:
+            out_file.write(javadoc)
+        
+        print(f"JavaDoc extracted to 'javadoc_output.txt'")
+    else:
+        print(f"File {target_file} not found.")
+
+
+name = "CHANGE_THE_NAME"
+search_and_extract(name, "Files")
